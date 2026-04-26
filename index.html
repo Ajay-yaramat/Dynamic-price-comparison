@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>PriceScout — Compare & Buy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="index.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <div class="logo" onclick="goHome()">
+      <span class="logo-mark">◈</span>
+      <span class="logo-name">PriceScout</span>
+    </div>
+    <div class="nav-search" id="navSearch" style="display:none">
+      <input id="navQ" type="text" placeholder="Search products…" onkeydown="if(event.key==='Enter')search(this.value)"/>
+      <button onclick="search(document.getElementById('navQ').value)">⌕</button>
+    </div>
+    <div class="nav-right">
+      <div id="authBtns">
+        <button class="btn-ghost" onclick="showModal('loginModal')">Login</button>
+        <button class="btn-solid" onclick="showModal('registerModal')">Sign Up</button>
+      </div>
+      <div id="userChip" style="display:none">
+        <div class="chip" onclick="goPage('account')">
+          <span class="chip-av" id="chipAv">U</span>
+          <span id="chipName"></span>
+        </div>
+        <button class="btn-ghost-sm" onclick="logout()">Out</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="pgHome">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-gfx"><div class="gfx-ring r1"></div><div class="gfx-ring r2"></div><div class="gfx-ring r3"></div></div>
+    <div class="hero-body">
+      <div class="hero-pill"><span class="live-dot"></span>Live prices · 10+ products per category</div>
+      <h1>Compare prices.<br/><em>Buy smarter.</em></h1>
+      <p class="hero-sub">Search any product and instantly see prices across Amazon & Flipkart — then buy in one click.</p>
+      <div class="hero-search">
+        <input id="heroQ" type="text" placeholder="Search laptop, iPhone, TV, headphones…" onkeydown="if(event.key==='Enter')search(this.value)"/>
+        <button onclick="search(document.getElementById('heroQ').value)">Search →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="cats-section">
+    <div class="wrap">
+      <div class="sec-head"><h2>Browse Categories</h2><p>Pick a category to see 10 real products with live prices</p></div>
+      <div class="cats-grid" id="catsGrid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="pgResults" style="display:none">
+  <div class="wrap results-wrap">
+    <div class="results-topbar">
+      <div>
+        <h2 class="results-heading" id="resHeading">Results</h2>
+        <p class="results-sub" id="resSub"></p>
+      </div>
+      <div class="sort-row">
+        <span>Sort:</span>
+        <button class="sort-btn on" id="sb-price"    onclick="sort('price')">Price ↑</button>
+        <button class="sort-btn"    id="sb-rating"   onclick="sort('rating')">Rating</button>
+        <button class="sort-btn"    id="sb-discount" onclick="sort('discount')">Discount</button>
+      </div>
+    </div>
+    <div class="prod-grid" id="prodGrid"></div>
+  </div>
+</div>
+
+<!-- ACCOUNT PAGE -->
+<div id="pgAccount" style="display:none">
+  <div class="wrap">
+    <div class="acc-layout">
+      <aside class="acc-side">
+        <div class="acc-av" id="accAv">U</div>
+        <div class="acc-name" id="accName"></div>
+        <div class="acc-email" id="accEmail"></div>
+        <nav class="acc-nav">
+          <button class="anb active" onclick="accTab('orders',this)">📦 My Orders</button>
+          <button class="anb" onclick="accTab('saved',this)">💳 Payment Methods</button>
+        </nav>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+      </aside>
+      <div class="acc-main">
+        <div id="accTabOrders">
+          <h3 class="tab-h">My Orders</h3>
+          <div id="ordersList"></div>
+        </div>
+        <div id="accTabSaved" style="display:none">
+          <h3 class="tab-h">Saved Payment Methods</h3>
+          <div class="saved-pm">
+            <div class="pm-item"><span class="pm-ico">💳</span><div><div>VISA ···· 4242</div><div class="pm-sub">Expires 12/27</div></div><span class="pm-tag">Default</span></div>
+            <div class="pm-item"><span class="pm-ico">📱</span><div><div>UPI — user@upi</div><div class="pm-sub">Linked</div></div></div>
+            <div class="pm-item"><span class="pm-ico">🏦</span><div><div>Net Banking — SBI</div><div class="pm-sub">Connected</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="logo"><span class="logo-mark">◈</span><span class="logo-name">PriceScout</span></div>
+    <p>© 2025 PriceScout — Compare smarter, buy better.</p>
+  </div>
+</footer>
+
+<!-- ══ MODAL: LOGIN ══ -->
+<div class="overlay" id="loginModal" style="display:none" onclick="overlayClick(event,'loginModal')">
+  <div class="modal">
+    <button class="mc" onclick="hideModal('loginModal')">✕</button>
+    <div class="mi">👤</div>
+    <h2>Welcome Back</h2>
+    <p class="ms">Sign in to track your orders</p>
+    <div class="fg"><label>Email</label><input id="liEmail" type="email" class="fi" placeholder="you@example.com"/></div>
+    <div class="fg"><label>Password</label><input id="liPass" type="password" class="fi" placeholder="••••••••"/></div>
+    <button class="btn-full" onclick="login()">Sign In</button>
+    <div class="mfb" id="liFb"></div>
+    <p class="msw">No account? <a href="#" onclick="switchModal('loginModal','registerModal')">Sign Up</a></p>
+  </div>
+</div>
+
+<!-- ══ MODAL: REGISTER ══ -->
+<div class="overlay" id="registerModal" style="display:none" onclick="overlayClick(event,'registerModal')">
+  <div class="modal">
+    <button class="mc" onclick="hideModal('registerModal')">✕</button>
+    <div class="mi">✨</div>
+    <h2>Create Account</h2>
+    <p class="ms">Join PriceScout for free</p>
+    <div class="fg"><label>Name</label><input id="rgName" type="text" class="fi" placeholder="Rahul Sharma"/></div>
+    <div class="fg"><label>Email</label><input id="rgEmail" type="email" class="fi" placeholder="you@example.com"/></div>
+    <div class="fg"><label>Password</label><input id="rgPass" type="password" class="fi" placeholder="Min 6 characters"/></div>
+    <button class="btn-full" onclick="register()">Create Account</button>
+    <div class="mfb" id="rgFb"></div>
+    <p class="msw">Have an account? <a href="#" onclick="switchModal('registerModal','loginModal')">Sign In</a></p>
+  </div>
+</div>
+
+<!-- ══ MODAL: BUY ══ -->
+<div class="overlay" id="buyModal" style="display:none" onclick="overlayClick(event,'buyModal')">
+  <div class="modal modal-wide">
+    <button class="mc" onclick="hideModal('buyModal')">✕</button>
+
+    <!-- Step bar -->
+    <div class="steps">
+      <div class="step" id="si1"><span>1</span>Review</div>
+      <div class="step-line"></div>
+      <div class="step" id="si2"><span>2</span>Payment</div>
+      <div class="step-line"></div>
+      <div class="step" id="si3"><span>3</span>Confirm</div>
+    </div>
+
+    <!-- Step 1 -->
+    <div id="bs1">
+      <div class="buy-header">
+        <img id="bImg" src="" alt="" class="buy-thumb"/>
+        <div>
+          <div class="buy-name" id="bName"></div>
+          <div class="buy-store-line">Best deal at <strong id="bStoreLine"></strong></div>
+          <div class="buy-price" id="bPrice"></div>
+        </div>
+      </div>
+      <div class="summary-box">
+        <div class="sr"><span>Store</span><span id="bStore"></span></div>
+        <div class="sr"><span>MRP</span><span id="bMRP" class="striked"></span></div>
+        <div class="sr"><span>Discount</span><span id="bDisc" class="green"></span></div>
+        <div class="sr"><span>Delivery</span><span>Free Delivery</span></div>
+        <div class="sr sr-total"><span>Total</span><span id="bTotal"></span></div>
+      </div>
+      <div class="store-note">🔗 After placing order, we'll open <strong id="bStoreNote"></strong> in a new tab to complete purchase.</div>
+      <div class="mact">
+        <button class="btn-outline" onclick="hideModal('buyModal')">Cancel</button>
+        <button class="btn-full-w" onclick="bStep(2)">Choose Payment →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="bs2" style="display:none">
+      <h3 class="sh">Select Payment Method</h3>
+      <div class="pay-tabs">
+        <button class="ptab on" onclick="payTab('upi',this)">📱 UPI</button>
+        <button class="ptab"    onclick="payTab('card',this)">💳 Card</button>
+        <button class="ptab"    onclick="payTab('nb',this)">🏦 Net Banking</button>
+        <button class="ptab"    onclick="payTab('cod',this)">💵 COD</button>
+      </div>
+
+      <div id="ppUPI">
+        <div class="upi-row">
+          <div class="uapp" onclick="pickUPI(this,'GooglePay')"><div class="uico" style="background:#4285f4">G</div><span>Google Pay</span></div>
+          <div class="uapp" onclick="pickUPI(this,'PhonePe')">  <div class="uico" style="background:#5f259f">P</div><span>PhonePe</span></div>
+          <div class="uapp" onclick="pickUPI(this,'Paytm')">    <div class="uico" style="background:#00b9f1">₹</div><span>Paytm</span></div>
+          <div class="uapp" onclick="pickUPI(this,'BHIM')">     <div class="uico" style="background:#138808">B</div><span>BHIM</span></div>
+        </div>
+        <div class="fg mt1"><label>Or enter UPI ID</label><input id="upiId" class="fi" placeholder="yourname@upi"/></div>
+      </div>
+
+      <div id="ppCard" style="display:none">
+        <div class="cvis">
+          <div class="cchip">▬▬</div>
+          <div class="cnum" id="cNumD">•••• •••• •••• ••••</div>
+          <div class="cbot"><div><div class="cl">CARD HOLDER</div><div id="cHolD">YOUR NAME</div></div><div><div class="cl">EXPIRES</div><div id="cExpD">MM/YY</div></div></div>
+        </div>
+        <div class="form-row mt1">
+          <div class="fg"><label>Card Number</label><input id="cNum" class="fi" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtC(this)"/></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Name on Card</label><input id="cHol" class="fi" placeholder="Rahul Sharma" oninput="document.getElementById('cHolD').textContent=this.value||'YOUR NAME'"/></div>
+          <div class="fg"><label>Expiry</label><input id="cExp" class="fi" placeholder="MM/YY" maxlength="5" oninput="fmtE(this)"/></div>
+          <div class="fg"><label>CVV</label><input id="cCVV" class="fi" type="password" placeholder="•••" maxlength="3"/></div>
+        </div>
+        <div class="secure-tag">🔒 256-bit encrypted · Your data is safe</div>
+      </div>
+
+      <div id="ppNB" style="display:none">
+        <div class="bank-grid">
+          <div class="bk" onclick="pickBank(this,'SBI')">   <span>🏦</span> SBI</div>
+          <div class="bk" onclick="pickBank(this,'HDFC')">  <span>🏦</span> HDFC</div>
+          <div class="bk" onclick="pickBank(this,'ICICI')"> <span>🏦</span> ICICI</div>
+          <div class="bk" onclick="pickBank(this,'Axis')">  <span>🏦</span> Axis</div>
+          <div class="bk" onclick="pickBank(this,'Kotak')"> <span>🏦</span> Kotak</div>
+          <div class="bk" onclick="pickBank(this,'PNB')">   <span>🏦</span> PNB</div>
+        </div>
+        <p id="bkTxt" class="bk-txt"></p>
+      </div>
+
+      <div id="ppCOD" style="display:none">
+        <div class="cod-box">
+          <div style="font-size:2.5rem">💵</div>
+          <h4>Cash on Delivery</h4>
+          <p>Pay when your order arrives. Additional ₹40 COD handling fee.</p>
+          <div class="cod-ttl">Total with COD: <strong id="codAmt"></strong></div>
+        </div>
+      </div>
+
+      <div class="mact mt1">
+        <button class="btn-outline" onclick="bStep(1)">← Back</button>
+        <button class="btn-full-w" onclick="bStep(3)">Review Order →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div id="bs3" style="display:none">
+      <h3 class="sh">Confirm Your Order</h3>
+      <div class="confirm-box">
+        <div class="cr"><span>Product</span><strong id="cf1"></strong></div>
+        <div class="cr"><span>Store</span><strong id="cf2"></strong></div>
+        <div class="cr"><span>Amount</span><strong id="cf3" class="cfa"></strong></div>
+        <div class="cr"><span>Payment</span><strong id="cf4"></strong></div>
+        <div class="cr"><span>Est. Delivery</span><strong id="cf5"></strong></div>
+      </div>
+      <div class="mact">
+        <button class="btn-outline" onclick="bStep(2)">← Change Payment</button>
+        <button class="btn-green" onclick="placeOrder()">✓ Confirm & Open Store</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: SUCCESS ══ -->
+<div class="overlay" id="successModal" style="display:none" onclick="overlayClick(event,'successModal')">
+  <div class="modal">
+    <div class="success-ring">✓</div>
+    <h2>Order Confirmed!</h2>
+    <p class="ms">Your order has been placed successfully.</p>
+    <div class="succ-box" id="succBox"></div>
+    <div class="mact mt1">
+      <button class="btn-outline" onclick="hideModal('successModal');goPage('account')">View Orders</button>
+      <button class="btn-solid" onclick="openStore()">Open Store →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADER -->
+<div class="loader-wrap" id="loader" style="display:none">
+  <div class="loader-ring"></div>
+  <p id="loaderTxt">Loading…</p>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
